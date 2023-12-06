@@ -1,49 +1,62 @@
 # YouTube Clone Design Document
 
 ## Introduction
-This document outlines the design of a simplified YouTube clone, created as part of a Full Stack Development course. The objective is not to replicate YouTube in its entirety but to construct a basic version that incorporates YouTube's core functionalities. The focus is on simplicity and learning, rather than creating a production-ready system.
+This document details the design of a simplified YouTube clone, developed as part of a Full Stack Development course. The project aims to create a basic version of YouTube, focusing on core functionalities and user interaction, emphasizing learning and simplicity.
 
 ## Background
-YouTube is a video-sharing platform enabling users to upload, view, rate, share, and comment on videos. Due to its vast scale and complex features, this project will primarily concentrate on video uploading and viewing.
+YouTube is a vast video-sharing platform that allows for uploading, viewing, rating, sharing, and commenting on videos. This project extends the initial focus on video uploading and viewing to include user engagement features like Likes/Dislikes and a Comment Section.
 
 ## Requirements
 - Users can sign in/out using their Google account.
 - Users can upload videos while signed in.
-- Videos should be transcoded to multiple formats (e.g., 360p, 720p).
-- Users can view a list and individual videos, regardless of sign-in status.
+- Videos are transcoded to multiple formats (e.g., 360p, 720p).
+- Users can view a list of uploaded videos and individual videos, with or without signing in.
+- Users can like or dislike videos (signed in users).
+- Users can comment on videos (signed in users).
 
 ## High-Level Design
 ### Components:
-1. **Video Storage**: Utilizing Google Cloud Storage for hosting raw and processed videos.
-2. **Video Upload Events**: Employing Cloud Pub/Sub for managing video upload events, enhancing durability, and allowing asynchronous video processing.
-3. **Video Processing Workers**: Using Cloud Run for transcoding videos with ffmpeg and handling variable workloads.
-4. **Video Metadata**: Storing video metadata in Firestore for display purposes.
-5. **Video API**: Developing a simple API with Firebase Functions for video uploads and metadata retrieval.
-6. **Web Client**: Creating a user interface with Next.js, hosted on Cloud Run, for video uploads and sign-in.
-7. **Authentication**: Integrating Firebase Auth for user authentication, particularly with Google Sign-In.
+- **Video Storage:** Google Cloud Storage for hosting raw and processed videos.
+- **Video Upload Events:** Cloud Pub/Sub manages video upload events for enhanced durability and asynchronous processing.
+- **Video Processing Workers:** Cloud Run for transcoding videos using ffmpeg.
+- **Video Metadata:** Firestore for storing video metadata.
+- **Video API:** Firebase Functions to handle video uploads and metadata retrieval.
+- **Web Client:** Next.js-based UI, hosted on Cloud Run, for video uploads and user interactions.
+- **Authentication:** Firebase Auth for user authentication with Google Sign-In.
+- **Likes/Dislikes System:** A system to manage user likes and dislikes on videos.
+- **Comments System:** A platform for users to post and view comments on videos.
 
 ## Detailed Design
 ### 1. User Sign Up
 - Integration of Firebase Auth for Google account sign-ups.
-- Creation of Firestore documents for each user, containing additional information.
-- Use of Firebase Auth triggers for reliable user document creation.
+- Creation of Firestore documents for each user.
 
 ### 2. Video Upload
-- Restricting uploads to authenticated users.
-- Generating signed URLs through Firebase Functions for secure uploads to Google Cloud Storage.
+- Restriction to authenticated users for video uploads.
+- Secure upload URLs generated through Firebase Functions.
 
 ### 3. Video Processing
-- Implementing Cloud Pub/Sub for managing high-volume uploads and decoupling upload and processing stages.
-- Utilizing Cloud Run workers for processing and Firestore for storing video metadata.
+- Cloud Pub/Sub for managing high-volume uploads.
+- Cloud Run workers for video processing and Firestore for metadata storage.
+
+### 4. Likes and Dislikes
+- Implementation of a user interaction system for liking or disliking videos.
+- Firestore schema updated to track like and dislike counts.
+- API endpoints created for processing likes/dislikes.
+
+### 5. Comment Section
+- System for users to post and view comments on videos.
+- Extension of Firestore schema to include comments, linked to users and videos.
+- Updated API and frontend for comment management.
 
 ## Limitations & Future Work
-- Handling of request timeouts and message redelivery limits in Cloud Run and Pub/Sub.
-- Absence of checks for illegal content in uploaded videos.
-- Detailed exploration of these limitations and potential future enhancements is suggested.
+- Timeouts and message redelivery limits in Cloud Run and Pub/Sub.
+- No current system to check for illegal content in uploaded videos.
+- Future enhancements to explore: advanced comment moderation and refined likes/dislikes system.
 
 ## References
 - [Firebase Auth Documentation](https://firebase.google.com/docs/auth)
 - [Cloud Storage Signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls)
 - [Pub/Sub Push Subscriptions](https://cloud.google.com/pubsub/docs/push)
-- [Integrating Pub/Sub with Cloud Storage](https://cloud.google.com/storage/docs/pubsub-notifications)
+- [Using Pub/Sub with Cloud Storage](https://cloud.google.com/storage/docs/pubsub-notifications)
 - [Using Pub/Sub with Cloud Run](https://cloud.google.com/run/docs/tutorials/pubsub)
